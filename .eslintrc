@@ -1,0 +1,14 @@
+{
+  "plugins": [
+    "simple-import-sort",
+    "unused-imports",
+    "prettier",
+    "@typescript-eslint"
+  ],
+  "rules": {
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
+  },
+  "parser": "@typescript-eslint/parser",
+  "root": true
+}

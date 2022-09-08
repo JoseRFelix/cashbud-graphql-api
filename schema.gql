@@ -4,11 +4,27 @@
 # -----------------------------------------------
 
 type Account {
+  _count: AccountCount
   createdAt: DateTime!
-  description: String!
-  id: Int!
+  description: String
+  id: String!
   name: String!
   updatedAt: DateTime!
+  userId: String
+}
+
+type AccountCount {
+  transactions: Int!
+}
+
+input AccountCreateInput {
+  User: UserCreateNestedOneWithoutAccountsInput
+  createdAt: DateTime
+  description: String
+  id: String
+  name: String!
+  transactions: TransactionCreateNestedManyWithoutAccountInput
+  updatedAt: DateTime
 }
 
 """
@@ -16,6 +32,110 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 """
 scalar DateTime
 
+type Mutation {
+  createAccount(data: AccountCreateInput!): Account!
+  signIn(data: SignInUniqueInput!): SignInResponse!
+  signUp(data: SignUpUniqueInput!): User!
+}
+
 type Query {
   getAccounts: [Account!]!
+  getUsers: [User!]!
+}
+
+type SignInResponse {
+  token: String!
+}
+
+input SignInUniqueInput {
+  email: String!
+  password: String!
+}
+
+input SignUpUniqueInput {
+  email: String!
+  name: String!
+  password: String!
+}
+
+input TransactionCreateManyAccountInput {
+  amount: Float!
+  date: DateTime
+  id: String
+  type: TransactionType!
+}
+
+input TransactionCreateManyAccountInputEnvelope {
+  data: [TransactionCreateManyAccountInput!]!
+  skipDuplicates: Boolean
+}
+
+input TransactionCreateNestedManyWithoutAccountInput {
+  connect: [TransactionWhereUniqueInput!]
+  connectOrCreate: [TransactionCreateOrConnectWithoutAccountInput!]
+  create: [TransactionCreateWithoutAccountInput!]
+  createMany: TransactionCreateManyAccountInputEnvelope
+}
+
+input TransactionCreateOrConnectWithoutAccountInput {
+  create: TransactionCreateWithoutAccountInput!
+  where: TransactionWhereUniqueInput!
+}
+
+input TransactionCreateWithoutAccountInput {
+  amount: Float!
+  date: DateTime
+  id: String
+  type: TransactionType!
+}
+
+enum TransactionType {
+  Credit
+  Debit
+}
+
+input TransactionWhereUniqueInput {
+  id: String
+}
+
+type User {
+  _count: UserCount
+  createdAt: DateTime!
+  email: String
+  emailVerified: DateTime
+  id: String!
+  image: String
+  name: String
+  updatedAt: DateTime!
+}
+
+type UserCount {
+  accounts: Int!
+}
+
+input UserCreateNestedOneWithoutAccountsInput {
+  connect: UserWhereUniqueInput
+  connectOrCreate: UserCreateOrConnectWithoutAccountsInput
+  create: UserCreateWithoutAccountsInput
+}
+
+input UserCreateOrConnectWithoutAccountsInput {
+  create: UserCreateWithoutAccountsInput!
+  where: UserWhereUniqueInput!
+}
+
+input UserCreateWithoutAccountsInput {
+  createdAt: DateTime
+  email: String
+  emailVerified: DateTime
+  id: String
+  image: String
+  name: String
+  password: String!
+  updatedAt: DateTime
+}
+
+input UserWhereUniqueInput {
+  email: String
+  id: String
 }

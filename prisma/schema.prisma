@@ -11,10 +11,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  /// @TypeGraphQL.omit(output: true)
+  password      String
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+}
+
 model Account {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String        @id @default(cuid())
+  name         String
+  description  String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+  User         User?         @relation(fields: [userId], references: [id])
+  userId       String?
+}
+
+enum TransactionType {
+  Credit
+  Debit
+}
+
+model Transaction {
+  id        String          @id @default(cuid())
+  amount    Float
+  date      DateTime        @default(now())
+  type      TransactionType
+  account   Account?        @relation(fields: [accountId], references: [id])
+  accountId String?
 }
